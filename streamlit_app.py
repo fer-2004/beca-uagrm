@@ -6,19 +6,49 @@ import math
 st.set_page_config(page_title="Asistente Becas IDH", page_icon="🎓", layout="centered")
 
 # --- ESTILOS CSS PERSONALIZADOS (MAQUILLAJE) ---
+# --- ESTILOS CSS PERSONALIZADOS (MODO OSCURO PRO) ---
 st.markdown("""
     <style>
-    /* Cambiar color de fondo de la barra lateral para que resalte */
-    [data-testid="stSidebar"] {
-        background-color: #f8f9fa;
+    /* 1. Fondo principal y texto */
+    .stApp {
+        background-color: #0e1117; /* Fondo oscuro elegante */
+        color: #fafafa;
     }
-    /* Resaltar los mensajes de éxito/error */
+    
+    /* 2. Barra lateral (Sidebar) */
+    [data-testid="stSidebar"] {
+        background-color: #262730; /* Gris oscuro para el menú */
+        border-right: 1px solid #4b4b4b;
+    }
+    
+    /* 3. Títulos y Cabeceras */
+    h1, h2, h3 {
+        color: #ff4b4b !important; /* Rojo Streamlit (combina con el escudo) */
+        font-family: 'Helvetica', sans-serif;
+    }
+    
+    /* 4. Cajas de Info/Éxito (Alertas) */
     .stAlert {
-        border-radius: 10px;
+        background-color: #1c1e24; /* Fondo suave para cajas */
+        border: 1px solid #4b4b4b;
+        color: #ffffff;
+    }
+    
+    /* 5. Radio Buttons y Selectbox */
+    .stRadio label, .stSelectbox label {
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+    
+    /* 6. Ajuste del Logo para que no se vea gigante */
+    [data-testid="stSidebar"] img {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-radius: 50%; /* Hace el logo circular si es cuadrado */
+        border: 2px solid #ffffff; /* Borde blanco fino */
     }
     </style>
 """, unsafe_allow_html=True)
-
 # --- BARRA LATERAL: IDENTIDAD Y MENÚ ---
 # 1. EL LOGO (Asegúrate de haber subido 'logo_uagrm.jpg' a GitHub)
 try:
