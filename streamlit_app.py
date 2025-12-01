@@ -98,19 +98,65 @@ elif tipo_estudiante == "Estudiante Antiguo":
 st.markdown("---")
 st.subheader("Resultado del Análisis")
 
+# --- PASO 3: RESULTADO FINAL Y SALIDA (OUTPUT) ---
+st.markdown("---")
+st.subheader("Resultado del Análisis")
+
 if resultado == "APROBADO":
     st.balloons()
     st.success(f"🎉 ¡FELICIDADES! Eres apto para postular a la {tipo_beca}.")
     
-    st.markdown("### 📂 Documentación a presentar:")
-    st.write("""
-    **Debe presentar en FOLDER AMARILLO TAMAÑO CARTA con nepaco, rotulado con:**
-    * Nombre de la Beca
-    * Nombre y Apellido Completo
-    * Registro Universitario
-    * Nombre de la Carrera y Facultad
-    """)
-    st.caption("Fuente: Dirección de Bienestar Social y Salud (DUBSS) - Gestión 2025")
+    # --- LÓGICA DE DOCUMENTOS ESPECÍFICOS ---
+    # Definimos qué papeles pide cada beca según las imágenes del reglamento
+    
+    docs_comunes = """
+    **PRESENTACIÓN (Para todas las becas):**
+    * 📂 Folder amarillo tamaño carta con nepaco.
+    * 🏷️ Debidamente rotulado (Nombre, Registro, Carrera, Facultad).
+    * 📄 Formulario de ficha socioeconómica (emitido desde tu perfil).
+    """
+    
+    docs_extra = ""
+    
+    if tipo_beca == "Beca Alimentación":
+        docs_extra = """
+        **REQUISITOS ESPECÍFICOS:**
+        * 🆔 Documento de identidad (para firmar planilla de habilitación).
+        * 🍽️ Presentarse en las instalaciones del comedor correspondiente.
+        """
+        
+    elif tipo_beca == "Beca Estudio" or tipo_beca == "Beca Estudio Internado Rotatorio":
+        docs_extra = """
+        **REQUISITOS ESPECÍFICOS:**
+        * 📝 Formulario de informe mensual.
+        * 🆔 Fotocopia de carnet de identidad.
+        * 🧾 Boleta de inscripción mensual.
+        """
+        
+    elif tipo_beca == "Beca Investigación Científica" or tipo_beca == "Beca Investigación Tesis":
+        docs_extra = """
+        **REQUISITOS ESPECÍFICOS:**
+        * 🔬 Formulario de informe mensual.
+        * 🆔 Fotocopia de carnet de identidad.
+        * 🧾 Boleta de inscripción mensual.
+        * 📑 (Al finalizar) Presentación del trabajo final o tesis.
+        """
+
+    else:
+        # Por defecto para otras becas
+        docs_extra = "**REQUISITOS ESPECÍFICOS:** Consultar convocatoria específica para esta modalidad."
+
+    # Mostramos la información combinada
+    st.markdown("### 📂 Documentación a presentar")
+    col_docs1, col_docs2 = st.columns(2)
+    
+    with col_docs1:
+        st.markdown(docs_comunes)
+        st.caption("Fuente: Requisitos generales (Inciso g y nota al pie).")
+        
+    with col_docs2:
+        st.info(docs_extra)
+        st.caption(f"Fuente: Requisitos específicos para {tipo_beca}.")
 
 elif resultado == "RECHAZADO_PUNTAJE":
     st.error("❌ NO HABILITADO. Tu puntaje socioeconómico es menor a 35 puntos (Requisito Inciso e).")
