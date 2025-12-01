@@ -3,78 +3,97 @@ from datetime import date
 import math
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
-st.set_page_config(page_title="Asistente Becas IDH - UAGRM", page_icon="🎓", layout="centered")
+st.set_page_config(page_title="Asistente Becas IDH", page_icon="🎓", layout="centered")
 
-# --- CABECERA ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/e/eb/Escudo_UAGRM.jpg", caption="U.A.G.R.M.", use_container_width=True)
-st.title("🎓 Asistente Virtual de Becas IDH")
-st.markdown("---")
+# --- ESTILOS CSS PERSONALIZADOS (MAQUILLAJE) ---
+st.markdown("""
+    <style>
+    /* Cambiar color de fondo de la barra lateral para que resalte */
+    [data-testid="stSidebar"] {
+        background-color: #f8f9fa;
+    }
+    /* Resaltar los mensajes de éxito/error */
+    .stAlert {
+        border-radius: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# --- BARRA LATERAL: MENÚ DE 2 NIVELES ---
-st.sidebar.header("🔍 Selección de Beca")
+# --- BARRA LATERAL: IDENTIDAD Y MENÚ ---
+# 1. EL LOGO (Asegúrate de haber subido 'logo_uagrm.jpg' a GitHub)
+try:
+    st.sidebar.image("logo_uagrm.jpg", use_container_width=True)
+except:
+    # Si falla la carga, usa el escudo de Wikimedia por defecto
+    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/e/eb/Escudo_UAGRM.jpg", use_container_width=True)
 
-# NIVEL 1: Categoría
-categoria = st.sidebar.selectbox(
-    "1. Selecciona el Tipo de Beca:",
-    ["A. Becas Socioeconómicas", "B. Becas Académicas", "C. Becas de Extensión"]
+st.sidebar.title("🎓 Menú de Becas")
+st.sidebar.markdown("---")
+
+# 2. NIVEL 1: CATEGORÍA (Usamos Radio Button para diferenciarlo)
+st.sidebar.header("1️⃣ Selecciona la Categoría:")
+categoria = st.sidebar.radio(
+    "Tipo de Beneficio:",
+    ["A. Becas Socioeconómicas", "B. Becas Académicas", "C. Becas de Extensión"],
+    help="Elige el grupo de becas que te interesa para ver las opciones."
 )
 
-# NIVEL 2: Beca Específica (Dinámico según la categoría)
+# --- BURBUJA DE EXPLICACIÓN (Contexto inmediato) ---
 if categoria == "A. Becas Socioeconómicas":
-    tipo_beca = st.sidebar.selectbox(
-        "2. Elige la modalidad:",
-        ["Beca Alimentación", "Beca Albergue Universitario", "Beca Estudio", "Beca Estudio Internado Rotatorio"]
-    )
-elif categoria == "B. Becas Académicas":
-    tipo_beca = st.sidebar.selectbox(
-        "2. Elige la modalidad:",
-        ["Beca Investigación Científica", "Beca Investigación Tesis / Expociencia", "Beca Excelencia Académica"]
-    )
-else: # C. Extensión
-    tipo_beca = st.sidebar.selectbox(
-        "2. Elige la modalidad:",
-        ["Beca Interacción Social / Extensión"]
-    )
+    st.sidebar.info("💡 **Info:** Apoyo destinado a estudiantes con recursos limitados (Comedor, Vivienda, Dinero).")
+    opciones_beca = ["Beca Alimentación", "Beca Albergue Universitario", "Beca Estudio", "Beca Estudio Internado Rotatorio"]
 
-# --- DESCRIPCIÓN CONTEXTUAL (En palabras sencillas) ---
-# Diccionario de descripciones rápidas para educar al usuario
+elif categoria == "B. Becas Académicas":
+    st.sidebar.info("💡 **Info:** Incentivos para estudiantes destacados en notas o investigación.")
+    opciones_beca = ["Beca Investigación Científica", "Beca Investigación Tesis / Expociencia", "Beca Excelencia Académica"]
+
+else: # C. Extensión
+    st.sidebar.info("💡 **Info:** Financiamiento para proyectos que ayuden a la sociedad.")
+    opciones_beca = ["Beca Interacción Social / Extensión"]
+
+# 3. NIVEL 2: BECA ESPECÍFICA
+st.sidebar.markdown("---")
+st.sidebar.header("2️⃣ Elige la Modalidad:")
+tipo_beca = st.sidebar.selectbox("Selecciona una opción:", opciones_beca)
+
+# --- CUERPO PRINCIPAL ---
+st.title(f"Requisitos: {tipo_beca}")
+
+# Diccionario de descripciones detalladas
 descripciones = {
-    "Beca Alimentación": "🍽️ **¿Qué es?** Acceso gratuito al Comedor Universitario (almuerzo/cena) para estudiantes con recursos limitados.",
-    "Beca Albergue Universitario": "🏠 **¿Qué es?** Vivienda compartida gratuita para estudiantes que vienen de provincias alejadas.",
-    "Beca Estudio": "💼 **¿Qué es?** Apoyo económico mensual a cambio de realizar horas de apoyo (trabajo ligero) en oficinas o laboratorios de la U.",
-    "Beca Estudio Internado Rotatorio": "🏥 **¿Qué es?** Apoyo exclusivo para estudiantes de Salud (Medicina/Enfermería) que están en su etapa de internado.",
-    "Beca Investigación Científica": "🔬 **¿Qué es?** Incentivo económico para estudiantes que participan como auxiliares en proyectos oficiales de investigación.",
-    "Beca Investigación Tesis / Expociencia": "📜 **¿Qué es?** Apoyo para financiar gastos de tu Tesis de Grado o por haber ganado la feria de ciencias.",
-    "Beca Excelencia Académica": "🏆 **¿Qué es?** Premio automático a los mejores promedios de la carrera (no se postula, te eligen).",
-    "Beca Interacción Social / Extensión": "🤝 **¿Qué es?** Financiamiento para proyectos que lleven servicios o cultura de la Universidad a los barrios."
+    "Beca Alimentación": "🍽️ Acceso gratuito al Comedor Universitario (almuerzo/cena) diario.",
+    "Beca Albergue Universitario": "🏠 Vivienda gratuita para estudiantes de provincias alejadas.",
+    "Beca Estudio": "💼 Apoyo económico mensual a cambio de horas de trabajo administrativo.",
+    "Beca Estudio Internado Rotatorio": "🏥 Apoyo exclusivo para internos de Medicina/Enfermería.",
+    "Beca Investigación Científica": "🔬 Pago mensual por auxiliar en proyectos oficiales de la DICiT.",
+    "Beca Investigación Tesis / Expociencia": "📜 Financiamiento para gastos de graduación o premios de ferias.",
+    "Beca Excelencia Académica": "🏆 Premio automático a los mejores promedios (sin postulación).",
+    "Beca Interacción Social / Extensión": "🤝 Fondos para ejecutar proyectos en barrios o comunidades."
 }
 
-# Mostrar la descripción seleccionada
-st.info(descripciones[tipo_beca])
+st.success(descripciones[tipo_beca])
 
 # --- LÓGICA DE FECHAS ---
 hoy = date.today()
 if tipo_beca == "Beca Alimentación":
-    st.warning("📅 PLAZO DE ENTREGA: Del 24 de Febrero al 07 de Marzo.")
+    st.warning("📅 **PLAZO URGENTE:** Del 24 de Febrero al 07 de Marzo.")
 elif tipo_beca == "Beca Excelencia Académica":
-    st.success("📅 FECHA: Automática. Se otorga al finalizar la gestión.")
+    st.info("📅 **FECHA:** Automática al finalizar la gestión.")
 else:
-    st.warning("📅 PLAZO DE ENTREGA: Del 24 de Marzo al 04 de Abril.")
+    st.warning("📅 **PLAZO GENERAL:** Del 24 de Marzo al 04 de Abril.")
 
 st.markdown("---")
 
-# --- CASO ESPECIAL: EXCELENCIA ACADÉMICA ---
+# --- CASO ESPECIAL: EXCELENCIA ---
 if tipo_beca == "Beca Excelencia Académica":
-    st.write("""
-    **Requisitos Especiales (Art. 7 Reglamento):**
-    1. Haber aprobado el **100% de las materias inscritas** (o mín. 80%).
-    2. Tener uno de los **promedios más altos** de tu carrera.
-    3. **Nota:** No necesitas presentar papeles ahora. Verifica en tu perfil web si saliste beneficiado.
-    """)
-    st.stop() 
+    st.write("### 🥇 Normativa Especial")
+    st.write("Esta beca no requiere presentar folder. Debes cumplir:")
+    st.write("1. Haber aprobado el **100% de materias** (o 80% en casos especiales).")
+    st.write("2. Tener el promedio más alto de tu carrera.")
+    st.stop()
 
-# --- PASO 1: FILTROS "FATALES" ---
-st.subheader("Paso 1: Requisitos Generales")
+# --- PASO 1: FILTROS GENERALES ---
+st.subheader("📋 Paso 1: Filtros Básicos")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -83,99 +102,88 @@ with col1:
 
 with col2:
     deuda = st.radio("¿Tienes deudas con la U?", ("No", "Sí"))
-    doble_beneficio = st.radio("¿Tienes otra beca vigente?", ("No", "Sí"))
+    doble_beneficio = st.radio("¿Tienes otra beca?", ("No", "Sí"))
 
 if nacionalidad == "No" or regular == "No" or deuda == "Sí" or doble_beneficio == "Sí":
-    st.error("❌ NO HABILITADO: Incumples requisitos básicos (Nacionalidad, Deudas o Duplicidad).")
+    st.error("❌ NO HABILITADO. Revisa: Nacionalidad, Deudas o Doble Beneficio.")
     st.stop()
 else:
-    st.success("✅ Primer filtro aprobado.")
+    st.write("✅ Filtros básicos aprobados.")
 
 st.markdown("---")
 
-# --- PASO 2: TIPO DE ESTUDIANTE ---
-st.subheader("Paso 2: Evaluación Académica")
+# --- PASO 2: EVALUACIÓN ACADÉMICA ---
+st.subheader("📊 Paso 2: Evaluación Académica")
 
 tipo_estudiante = st.selectbox(
-    "¿Cuál es tu situación?",
+    "Situación del Estudiante:",
     ["Selecciona...", "Estudiante Nuevo (1er año/semestre)", "Estudiante Antiguo"]
 )
 
 resultado = "PENDIENTE"
 
 if tipo_estudiante == "Estudiante Nuevo (1er año/semestre)":
-    st.markdown("**Regla:** Se evalúa situación socio-económica.")
-    puntaje = st.number_input("Puntaje Ficha Socioeconómica:", 0, 100)
+    st.info("Regla: Se evalúa situación socioeconómica.")
+    puntaje = st.number_input("Puntaje Ficha Socioeconómica (0-100):", 0, 100)
     if puntaje >= 35: resultado = "APROBADO"
     else: resultado = "RECHAZADO_PUNTAJE"
 
 elif tipo_estudiante == "Estudiante Antiguo":
-    st.markdown("**Regla:** Debes haber vencido la mitad más uno de tus materias.")
-    col_a, col_b = st.columns(2)
-    with col_a: inscritas = st.number_input("Materias Inscritas (Semestre Anterior):", 1, step=1)
-    with col_b: aprobadas = st.number_input("Materias APROBADAS (Semestre Anterior):", 0, step=1)
+    st.info("Regla: Debes haber vencido la mitad más uno de tus materias.")
+    c1, c2 = st.columns(2)
+    with c1: inscritas = st.number_input("Materias Inscritas (Semestre Anterior):", 1)
+    with c2: aprobadas = st.number_input("Materias Aprobadas:", 0)
     
     minimo = math.floor(inscritas / 2) + 1
-    st.caption(f"🧮 Necesitas: **{minimo}** aprobadas.")
     
     if aprobadas >= minimo: resultado = "APROBADO"
     else: resultado = "RECHAZADO_ACADEMICO"
 
-# --- PASO 3: RESULTADO ---
+# --- DIAGNÓSTICO FINAL ---
 st.markdown("---")
-st.subheader("Diagnóstico Final")
+st.subheader("🏁 Diagnóstico Final")
 
 if resultado == "APROBADO":
     st.balloons()
-    st.success(f"🎉 ¡HABILITADO! Puedes postular a: {tipo_beca}")
+    st.success(f"🎉 ¡ESTÁS HABILITADO PARA: {tipo_beca}!")
     
-    st.markdown("### 📂 Documentación a Presentar")
-    st.warning("⚠️ OJO: Folder Amarillo rotulado con Nombre, Registro, Carrera y **CELULAR**.")
-
-    tab1, tab2 = st.tabs(["📄 Requisitos Comunes", "🔍 Específicos de esta Beca"])
-    
-    with tab1:
-        st.write("""
-        1. **Ficha Socioeconómica** (Lapicero azul).
-        2. **Ficha Social** (Impresa).
-        3. **Boleta Inscripción** (Vigente).
-        4. **Histórico Académico**.
-        5. **Fotocopia C.I.** (2 copias).
-        6. **Certificado Nacimiento** (1 copia).
-        7. **Croquis Vivienda** (Mapa detallado).
-        8. **Factura Luz/Agua** (Respaldo vivienda).
-        9. **Boleta de Pago/Certificado** (Respaldo ingresos).
-        10. **Folder Amarillo**.
-        """)
-        st.caption("Provincias: Adjuntar certificado de comunidad.")
-
-    with tab2:
-        if tipo_beca == "Beca Alimentación":
-            st.write("- 🆔 C.I. original (firma planilla).")
-            st.write("- 🏃 Asistir al comedor para habilitación.")
+    with st.expander("📂 VER LISTA DE REQUISITOS (Clic aquí)", expanded=True):
+        st.warning("⚠️ El Folder Amarillo debe llevar en la tapa: Nombre, Registro, Carrera y **CELULAR**.")
+        st.write("1. **Ficha Socioeconómica** (Lapicero azul).")
+        st.write("2. **Ficha Social** (Impresa).")
+        st.write("3. **Boleta Inscripción** (1-2025).")
+        st.write("4. **Histórico Académico**.")
+        st.write("5. **Fotocopia C.I.** (2 copias).")
+        st.write("6. **Certificado Nacimiento**.")
+        st.write("7. **Croquis Vivienda** (Google Maps).")
+        st.write("8. **Factura Luz/Agua**.")
+        st.write("9. **Respaldo Ingresos** (Boleta/Certificado).")
+        st.write("10. **Folder Amarillo**.")
+        
+        st.markdown("---")
+        st.markdown(f"**➕ REQUISITO ESPECÍFICO PARA {tipo_beca}:**")
+        
+        if "Alimentación" in tipo_beca:
+            st.write("🆔 C.I. Original + Asistencia Biométrica.")
         elif "Estudio" in tipo_beca:
-            st.write("- 📝 Informe mensual de actividades.")
-            st.write("- 📨 Carta de aceptación de la Jefatura.")
+            st.write("📝 Informe Mensual + Carta Solicitud.")
         elif "Investigación" in tipo_beca:
-            st.write("- 📨 Carta a Directora DICiT.")
-            st.write("- 🚫 Declaración Jurada No Plagio.")
-            st.write("- 📘 2 Perfiles de Investigación (con Tutor).")
+            st.write("🔬 Carta a DICiT + Declaración No Plagio + 2 Perfiles.")
         elif "Extensión" in tipo_beca:
-            st.write("- 📘 2 Proyectos de Interacción.")
-            st.write("- ✅ Visto bueno Jefe Extensión.")
+            st.write("📘 2 Proyectos Visados por Jefatura.")
 
 elif resultado == "RECHAZADO_PUNTAJE":
-    st.error("❌ NO HABILITADO: Puntaje socioeconómico bajo (<35).")
+    st.error("❌ NO HABILITADO. Puntaje socioeconómico insuficiente (<35).")
 elif resultado == "RECHAZADO_ACADEMICO":
-    st.error(f"❌ NO HABILITADO: Te faltaron materias. Necesitabas {minimo}.")
+    st.error(f"❌ NO HABILITADO. Te faltaron materias. Necesitabas {minimo}.")
 elif resultado == "PENDIENTE":
-    st.info("👈 Completa los datos del Paso 2.")
+    st.warning("👈 Completa los datos del Paso 2.")
 
 # --- FOOTER ---
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: gray; font-size: 12px;">
-    🛠️ Prototipo Académico - Ing. Informática UAGRM<br>
-    Normativa basada en Gestión 2025
+    Desarrollado para Metodología de la Investigación - UAGRM<br>
+    ⚠️ Prototipo Académico no vinculante.
 </div>
 """, unsafe_allow_html=True)
