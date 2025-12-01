@@ -102,67 +102,74 @@ st.subheader("Resultado del Análisis")
 st.markdown("---")
 st.subheader("Resultado del Análisis")
 
+# --- PASO 3: RESULTADO FINAL Y SALIDA (OUTPUT) ---
+st.markdown("---")
+st.subheader("Resultado del Análisis")
+
 if resultado == "APROBADO":
     st.balloons()
     st.success(f"🎉 ¡FELICIDADES! Eres apto para postular a la {tipo_beca}.")
     
-    # --- LÓGICA DE DOCUMENTOS ESPECÍFICOS ---
-    # Definimos qué papeles pide cada beca según las imágenes del reglamento
+    # --- LÓGICA DE DOCUMENTOS (INTEGRACIÓN VIDEO + REGLAMENTO) ---
     
-    docs_comunes = """
-    **PRESENTACIÓN (Para todas las becas):**
-    * 📂 Folder amarillo tamaño carta con nepaco.
-    * 🏷️ Debidamente rotulado (Nombre, Registro, Carrera, Facultad).
-    * 📄 Formulario de ficha socioeconómica (emitido desde tu perfil).
-    """
-    
-    docs_extra = ""
-    
-    if tipo_beca == "Beca Alimentación":
-        docs_extra = """
-        **REQUISITOS ESPECÍFICOS:**
-        * 🆔 Documento de identidad (para firmar planilla de habilitación).
-        * 🍽️ Presentarse en las instalaciones del comedor correspondiente.
-        """
-        
-    elif tipo_beca == "Beca Estudio" or tipo_beca == "Beca Estudio Internado Rotatorio":
-        docs_extra = """
-        **REQUISITOS ESPECÍFICOS:**
-        * 📝 Formulario de informe mensual.
-        * 🆔 Fotocopia de carnet de identidad.
-        * 🧾 Boleta de inscripción mensual.
-        """
-        
-    elif tipo_beca == "Beca Investigación Científica" or tipo_beca == "Beca Investigación Tesis":
-        docs_extra = """
-        **REQUISITOS ESPECÍFICOS:**
-        * 🔬 Formulario de informe mensual.
-        * 🆔 Fotocopia de carnet de identidad.
-        * 🧾 Boleta de inscripción mensual.
-        * 📑 (Al finalizar) Presentación del trabajo final o tesis.
-        """
+    st.markdown("### 📂 ¿Qué debo presentar?")
+    st.warning("⚠️ IMPORTANTE: Presentar todo en Folder Amarillo tamaño carta con Nepaco.")
 
-    else:
-        # Por defecto para otras becas
-        docs_extra = "**REQUISITOS ESPECÍFICOS:** Consultar convocatoria específica para esta modalidad."
-
-    # Mostramos la información combinada
-    st.markdown("### 📂 Documentación a presentar")
-    col_docs1, col_docs2 = st.columns(2)
+    tab1, tab2 = st.tabs(["📄 Requisitos Generales (Todos)", "🔍 Requisitos Específicos"])
     
-    with col_docs1:
-        st.markdown(docs_comunes)
-        st.caption("Fuente: Requisitos generales (Inciso g y nota al pie).")
+    with tab1:
+        st.write("""
+        **Todo estudiante debe tener estos 11 documentos en orden:**
+        1. **Ficha Socioeconómica:** Rellenada con lapicero azul (descargar de perfil o web).
+        2. **Ficha Social:** Impresa desde tu perfil web.
+        3. **Croquis de Vivienda:** Dibujo a mano o impresión de Google Maps (con flecha indicando casa).
+        4. **Fotocopia de Carnet:** 2 copias vigentes.
+        5. **Certificado de Nacimiento:** 1 fotocopia.
+        6. **Boleta de Inscripción:** Del semestre actual (semestre 1-2025).
+        7. **Histórico Académico:** Imprimir desde tu perfil.
+        8. **Respaldo de Vivienda:** Aviso de luz/agua (si es propia/cedida) o Recibo de alquiler/Contrato.
+        9. **Respaldo de Ingresos:** Boleta de pago (padres/tuyo) o Certificado de gremio/sindicato (si es informal).
+        10. **Folder Amarillo:** Rotulado en la tapa con tus datos.
+        """)
+        st.info("💡 Tip: Si eres de PROVINCIA, añade tu Certificado de Comunidad o Barrio.")
+
+    with tab2:
+        if tipo_beca == "Beca Alimentación":
+            st.markdown(f"**PARA {tipo_beca.upper()}:**")
+            st.write("- 🆔 Documento de identidad original (para firmar planilla).")
+            st.write("- 🍽️ Asistir al comedor asignado para la habilitación.")
+            
+        elif "Estudio" in tipo_beca:
+            st.markdown(f"**PARA {tipo_beca.upper()}:**")
+            st.write("- 📝 Formulario de informe mensual.")
+            st.write("- 📄 Carta de solicitud dirigida a la unidad donde harás horas beca.")
+            
+        elif "Investigación" in tipo_beca:
+             st.markdown(f"**PARA {tipo_beca.upper()}:**")
+             st.write("- 🔬 Cumplir los 8 requisitos extra de la DICIT.")
+             st.write("- 📋 Visto bueno del Jefe de Investigación de tu Facultad.")
+             
+        elif "Extensión" in tipo_beca or "Interacción" in tipo_beca:
+             st.markdown(f"**PARA {tipo_beca.upper()}:**")
+             st.write("- 📘 Dos (2) ejemplares del Proyecto (dirigido a la comunidad o barrio).")
+             st.write("- ✅ Visto bueno del Jefe de Extensión de tu Facultad.")
         
-    with col_docs2:
-        st.info(docs_extra)
-        st.caption(f"Fuente: Requisitos específicos para {tipo_beca}.")
+        else:
+            st.write("Consultar convocatoria específica.")
 
 elif resultado == "RECHAZADO_PUNTAJE":
-    st.error("❌ NO HABILITADO. Tu puntaje socioeconómico es menor a 35 puntos (Requisito Inciso e).")
+    st.error("❌ NO HABILITADO. Tu puntaje socioeconómico es menor a 35 puntos.")
+    st.markdown("**¿Por qué?** El reglamento exige priorizar a estudiantes con mayor necesidad económica.")
 
 elif resultado == "RECHAZADO_ACADEMICO":
-    st.error("❌ NO HABILITADO. No aprobaste la mitad más uno de tus materias (Requisito Inciso d / Art. 48).")
+    st.error("❌ NO HABILITADO. Rendimiento académico insuficiente.")
+    
+    # Explicación pedagógica (Matemática Discreta aplicada)
+    st.markdown("""
+    **Explicación del Reglamento (Art. 48):**
+    La regla es `Aprobadas >= (Inscritas / 2) + 1`.
+    * Ejemplo: Si inscribiste 6, la mitad es 3. Más uno es 4. Necesitas 4 aprobadas.
+    """)
 
 elif resultado == "PENDIENTE":
-    st.info("👈 Por favor completa la información del Paso 2.")
+    st.info("👈 Completa el formulario de la izquierda para ver tu diagnóstico.")
